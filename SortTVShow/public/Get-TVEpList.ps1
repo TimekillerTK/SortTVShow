@@ -96,3 +96,4 @@ function Get-TVEpList {
 
     } #process
 } #function
+Write-Output "$($PSCommandPath -replace '.tests','')"
