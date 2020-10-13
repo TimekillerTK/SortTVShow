@@ -65,7 +65,6 @@ function Get-TVEpList {
                         "{ShowTitle*:SomeThing}: Season {[int]Season:47} ({[int]Date:1950}): Episode {[int]Episode:142} - {EpTitle:nothing}")
     
 
-
             foreach($item in $rawtitles) {
                 
                 # converts the object 
