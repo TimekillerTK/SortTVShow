@@ -5,6 +5,27 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 #endregion
 
 Describe "ConvertTo-RomanNumeral" {
+    $testCases = @(
+        @{Number = 5; OutPutNumber = "V"; TestName = "Check Roman 5"}
+        @{Number = 4; OutPutNumber = "IV"; TestName = "Check Roman 4"}
+        @{Number = 1; OutPutNumber = "I"; TestName = "Check Roman 1"}
+        @{Number = 9; OutPutNumber = "IX"; TestName = "Check Roman 9"}
+        @{Number = 10; OutPutNumber = "X"; TestName = "Check Roman 10"}
+        @{Number = 17; OutPutNumber = "XVII"; TestName = "Check Roman 17"}
+        @{Number = 40; OutPutNumber = "XL"; TestName = "Check Roman 40"}
+        @{Number = 50; OutPutNumber = "L"; TestName = "Check Roman 50"}
+        @{Number = 100; OutPutNumber = "C"; TestName = "Check Roman 100"}
+        @{Number = 90; OutPutNumber = "XC"; TestName = "Check Roman 90"}
+        @{Number = 78; OutPutNumber = "LXXVIII"; TestName = "Check Roman 78"}
+        @{Number = 1000; OutPutNumber = "M"; TestName = "Check Roman 1000"}
+
+    )
+    It "Performs Test: <TestName>" -TestCases $testCases {
+        param($Number,$OutPutNumber)
+
+        ConvertTo-RomanNumeral -InputNumber $Number | Should -Be $OutPutNumber
+    }
+
     It "Zero should throw an error" {
         { ConvertTo-RomanNumeral -InputNumber 0 } | Should -Throw -ErrorId "InvalidInput"
     }
@@ -14,37 +35,5 @@ Describe "ConvertTo-RomanNumeral" {
     It "Always returns a string" {
         ConvertTo-RomanNumeral -InputNumber 5 | Should -BeOfType [string]
     }
-    It "Checks roman 5" {
-        ConvertTo-RomanNumeral -InputNumber 5 | Should -Be "V"
-    }
-    It "Checks roman 4" {
-        ConvertTo-RomanNumeral -InputNumber 4 | Should -Be "IV"
-    }
-    It "Checks roman 1" {
-        ConvertTo-RomanNumeral -InputNumber 1 | Should -Be "I"
-    }
-    It "Checks roman 9" {
-        ConvertTo-RomanNumeral -InputNumber 9 | Should -Be "IX"
-    }
-    It "Checks roman 10" {
-        ConvertTo-RomanNumeral -InputNumber 10 | Should -Be "X"
-    }
-    It "Checks roman 17" {
-        ConvertTo-RomanNumeral -InputNumber 17 | Should -Be "XVII"
-    }
-    It "Checks roman 40" {
-        ConvertTo-RomanNumeral -InputNumber 40 | Should -Be "XL"
-    }
-    It "Checks roman 50" {
-        ConvertTo-RomanNumeral -InputNumber 50 | Should -Be "L"
-    }
-    It "Checks roman 90" {
-        ConvertTo-RomanNumeral -InputNumber 90 | Should -Be "XC"
-    }
-    It "Checks roman 100" {
-        ConvertTo-RomanNumeral -InputNumber 100 | Should -Be "C"
-    }
-    It "Checks roman 78" {
-        ConvertTo-RomanNumeral -InputNumber 78 | Should -Be "LXXVIII"
-    }
+  
 }
