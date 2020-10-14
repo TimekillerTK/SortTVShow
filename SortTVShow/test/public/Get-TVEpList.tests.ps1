@@ -1,27 +1,8 @@
 #region:Header
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
-. "$here\$sut"
-Import-Module "$($PSCommandPath -replace '.tests','')" -force
-#Import-Module .\Get-TVEpList.ps1 -Force
-#Write-Output $MyInvocation.PSCommandPath -replace '.tests',''
-#endregion
-$configuration = [PesterConfiguration]@{
-    Run = @{
-        Path = 'C:\projects\tst'
-    }
-    Filter = @{
-        Tag = 'Acceptance'
-        ExcludeTag = 'WindowsOnly'
-    }
-    Should = @{
-        ErrorAction = 'Continue'
-    }
-    CodeCoverage = @{
-        Enable = $true
-    }
+BeforeAll {
+    . ($PScommandpath.Replace('.tests','')).Replace('\test','')
 }
-
+#endregion
 
 Describe "Get-TVEpList" {
     Context "Check Parameters" {

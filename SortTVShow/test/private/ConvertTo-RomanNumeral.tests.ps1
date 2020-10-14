@@ -1,9 +1,9 @@
-#region:Header
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
-. "$here\$sut"
-#endregion
+# Imports public and private functions before running.
+BeforeAll {
 
+    . ($PScommandpath.Replace('.tests','')).Replace('\test','')
+
+}
 Describe "ConvertTo-RomanNumeral" {
     $testCases = @(
         @{Number = 5; OutPutNumber = "V"; TestName = "Check Roman 5"}
@@ -20,6 +20,7 @@ Describe "ConvertTo-RomanNumeral" {
         @{Number = 1000; OutPutNumber = "M"; TestName = "Check Roman 1000"}
 
     )
+    
     It "Performs Test: <TestName>" -TestCases $testCases {
         param($Number,$OutPutNumber)
 
@@ -30,7 +31,7 @@ Describe "ConvertTo-RomanNumeral" {
         { ConvertTo-RomanNumeral -InputNumber 0 } | Should -Throw -ErrorId "InvalidInput"
     }
     It "String should throw error" {
-        { ConvertTo-RomanNumeral -InputNumber sgfhsrf } | Should -Throw -ErrorId "ParameterArgumentTransformationError"
+        { ConvertTo-RomanNumeral -InputNumber "sgfhsrf" } | Should -Throw -ErrorId "ParameterArgumentTransformationError,ConvertTo-RomanNumeral"
     }
     It "Always returns a string" {
         ConvertTo-RomanNumeral -InputNumber 5 | Should -BeOfType [string]
