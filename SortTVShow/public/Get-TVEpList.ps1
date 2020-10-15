@@ -1,3 +1,17 @@
+function Get-TVWebLinks {
+
+    param ($URI,$regex)
+    # Web scrape for URI
+    $fetch = Invoke-WebRequest -Uri $URI
+
+    # Selects the relevant links, obviously works only with TV shows, not movies
+    $rawtitles = (($fetch.links).title | Where-Object { $_ -match $Regex }) | Select-Object -Unique
+
+    return $rawtitles
+
+}
+
+
 function Get-TVEpList {
     <#
     .SYNOPSIS
@@ -48,16 +62,12 @@ function Get-TVEpList {
 
         # Create an empty arraylist object
         # This is suboptimal, optimize it LATER
-        $arraylist = New-Object -TypeName "System.Collections.ArrayList"
-        $arraylist.Clear()
-            
+        #$arraylist = New-Object -TypeName "System.Collections.ArrayList"
+        #$arraylist.Clear()
+        
         foreach ($URI in $URIs) {
             
-            # Web scrape for URI
-            $fetch = Invoke-WebRequest -Uri $URI
-    
-            # Selects the relevant links, obviously works only with TV shows, not movies
-            $rawtitles = (($fetch.links).title | Where-Object { $_ -match $Regex }) | Select-Object -Unique
+            $rawtitles = Get-TVWebLinks -URI $URI -regex $Regex
     
             # Template for ConvertFrom-String, doesn't work perfectly in all cases, needs to be looked at.
             $template = ("{ShowTitle*:Example Title}: Season {[int]Season:1} ({[int]Date:1988}): Episode {[int]Episode:1} - {EpTitle:Spaghetti Code?}`r`n" +
@@ -85,15 +95,22 @@ function Get-TVEpList {
 
 
                 # add an object to the arraylist
-                $arraylist.Add($temp) | Out-Null
+                #$arraylist.Add($temp) | Out-Null
+                [pscustomobject]@{
+                    ShowTitle = $temp.ShowTitle
+                    Season = $temp.Season
+                    Date = $temp.Date
+                    Episode = $temp.Episode
+                    EpTitle = $temp.EpTitle
+                    EpisodeZeroed = $temp.EpisodeZeroed
+                }
     
             } #foreach
-
+            
         } #foreach
 
         # Return the result
-        return $arraylist
+        #return $arraylist
 
     } #process
 } #function
-Write-Output "$($PSCommandPath -replace '.tests','')"

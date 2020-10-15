@@ -17,20 +17,54 @@ Describe "Get-TVEpList" {
 
         }
     }
-    Context "Main tests" {
+    Context "Main tests" -skip {
         $testCases = @(
             @{URI = "https://www.themoviedb.org/tv/1855-star-trek-voyager/season/1"; Output = "116235"; TestName = "Star Trek"}
             @{URI = "https://www.themoviedb.org/tv/35610-inuyasha/season/1"; Output = "598752"; TestName = "InuYasha"}
             @{URI = "https://www.themoviedb.org/tv/27660-legend-of-galactic-heroes/season/2"; Output = "163965"; TestName = "LOGH"}
     
         )
-        It "should return the same value when querying API for <TestName> season" -TestCases $testCases {
+        It "should return the same value when querying website for <TestName> season" -TestCases $testCases {
             param($URI, $output)
             (Invoke-WebRequest -Uri $URI).RawContentLength | Should -Be $Output
         }
+    }
+    Context "Get-TVWebLinks tests" {
+        It "should return an array" -Skip {
+            Assertion
+        }
+        It "should return items that match the regex" -Skip {
+            Assertion
+        }
+        It "Does another thing..." -Skip {
+            Assertion
+        }
+    }
+    Context "Other Tests" {
+        It "should return input split into objects"  {
+
+            Mock 'Get-TVWebLinks' {
+                @(
+                    "When They Cry: Season 1 (2006): Episode 1 - The Hidden Demon Chapter - Part 1 - The Beginning"
+                )
+            }
+
+            $object = [pscustomobject]@{
+                ShowTitle = "When They Cry"
+                Season = 1
+                Date = 2006
+                Episode = 1
+                EpTitle = "The Hidden Demon Chapter - Part 1 - The Beginning"
+                EpisodeZeroed = "1"
+            }
+
+            # This returns the same objects apparently, but apparently not. Need to check the types of both pscustomobjects and the types of all the property objects
+            Get-TVEpList -URIs sillywebsite.com | Should -Be $object
+
+        }
 
     }
-    Context "Other Websites Check" {
+    Context "Other Websites Check" -Skip {
         #Unfinished work below
         $testCases = @(
             @{URI = "https://www.imdb.com/title/tt0060028/episodes?season=1&ref_=tt_eps_sn_1"; Output = "116235"; TestName = "Star Trek"}
