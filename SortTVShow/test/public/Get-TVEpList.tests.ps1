@@ -13,11 +13,12 @@ Describe "Get-TVEpList" {
         }
         It "parameter Regex should exist" {
 
-            Get-Command "Get-TVEpList" | Should -HaveParameter Regex -Type String
+            Get-Command "Get-TVEpList" | Should -HaveParameter Regex -Type String -DefaultValue "Season "
+
 
         }
     }
-    Context "Main tests" -skip {
+    Context "Main tests" {
         $testCases = @(
             @{URI = "https://www.themoviedb.org/tv/1855-star-trek-voyager/season/1"; Output = "116235"; TestName = "Star Trek"}
             @{URI = "https://www.themoviedb.org/tv/35610-inuyasha/season/1"; Output = "598752"; TestName = "InuYasha"}
@@ -30,37 +31,59 @@ Describe "Get-TVEpList" {
         }
     }
     Context "Get-TVWebLinks tests" {
-        It "should return an array" -Skip {
-            Assertion
+
+        $testCases = @(
+            @{URI = ""; Output = "116235"; TestName = "Star Trek"}
+            @{URI = ""; Output = "598752"; TestName = "InuYasha"}
+            @{URI = ""; Output = "163965"; TestName = "LOGH"}
+    
+        )
+
+        # This should be fixed ok? OK! HTTP Response object is needed here... But maybe not, try to isolate it somehow
+        It "should return items that match the regex"  {
+
+            $variable = "vars for pscustomobject are here"
+            Mock 'Invoke-WebRequest' { 
+                # [Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject]@{
+                #     Links = [PSCustomObject]@{
+                #         Title = [string]@{ }
+                #     }
+
+                # }
+                
+                @("Season - Result1", "Not - Result2", "Pasta ... Result3") 
+            }
+
+            Get-TVWebLinks -URI blabla -regex "Season " | Should -Contain "Season - Result1"
+
         }
-        It "should return items that match the regex" -Skip {
-            Assertion
-        }
-        It "Does another thing..." -Skip {
-            Assertion
-        }
+
     }
-    Context "Other Tests" {
+    Context "Output tests" {
         It "should return input split into objects"  {
 
             Mock 'Get-TVWebLinks' {
                 @(
-                    "When They Cry: Season 1 (2006): Episode 1 - The Hidden Demon Chapter - Part 1 - The Beginning"
+                    "Spaghetti: Season 5 (2020): Episode 55 - Pasta, Pasta"
                 )
             }
 
-            $object = [pscustomobject]@{
-                ShowTitle = "When They Cry"
-                Season = 1
-                Date = 2006
-                Episode = 1
-                EpTitle = "The Hidden Demon Chapter - Part 1 - The Beginning"
-                EpisodeZeroed = "1"
+            $global:object = [pscustomobject]@{
+                ShowTitle = "Spaghetti"
+                Season = 5
+                Date = 2020
+                Episode = 55
+                EpTitle = 'Pasta, Pasta'
+                EpisodeZeroed = "55"
             }
 
-            # This returns the same objects apparently, but apparently not. Need to check the types of both pscustomobjects and the types of all the property objects
-            Get-TVEpList -URIs sillywebsite.com | Should -Be $object
+            #$properties = (($object | Get-Member) | Where-Object {$_.membertype -eq "NoteProperty"}).Name
+            $properties = $object.PSObject.Properties.Name
 
+            foreach ($name in $properties) {
+                (Get-TVEpList -URIs sillywebsite.com).$name | Should -Be $object.$name
+            }
+            
         }
 
     }
@@ -68,7 +91,7 @@ Describe "Get-TVEpList" {
         #Unfinished work below
         $testCases = @(
             @{URI = "https://www.imdb.com/title/tt0060028/episodes?season=1&ref_=tt_eps_sn_1"; Output = "116235"; TestName = "Star Trek"}
-            @{URI = "mal"; Output = "598752"; TestName = "InuYasha"}
+            @{URI = "https://myanimelist.net/anime/41006/Higurashi_no_Naku_Koro_ni_Gou"; Output = "598752"; TestName = "InuYasha"}
             @{URI = "otherwbsite"; Output = "163965"; TestName = "LOGH"}
     
         )
