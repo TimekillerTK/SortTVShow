@@ -51,7 +51,7 @@ function Get-TVEpList {
     [CmdletBinding()]
     param (
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)][ValidatePattern('www.themoviedb.org')]
         [string[]]$URIs,
 
         [Parameter()]
